@@ -1,4 +1,7 @@
-public class LeadToProcessAfterConvertionBatch implements Database.Batchable<sObject>, Schedulable{
+public class LeadToProcessAfterConvertionBatch implements Database.Batchable<sObject>, Schedulable, Database.Stateful {
+    private static List<ID> updatedLeads = new List<Id>();
+    private static List<ID> errorLeads = new List<Id>();
+    
     private String query = 'SELECT id, email, phone, convertedaccountid FROM lead WHERE NeedToProcess__c = TRUE';
     
     public void execute(System.SchedulableContext SC){
@@ -36,6 +39,9 @@ public class LeadToProcessAfterConvertionBatch implements Database.Batchable<sOb
             
         	}catch(Exception error){
             	//if an error occured store all info in ErrorLogger
+                for (Lead lead:leads){
+            		errorLeads.add(lead.id);
+                }
             	ErrorLogger__c logger = new ErrorLogger__c();
             	logger.ErrorType__c = 'Update.DataBase error';
             	logger.ErrorMessage__c = error.getMessage();
@@ -47,42 +53,11 @@ public class LeadToProcessAfterConvertionBatch implements Database.Batchable<sOb
     }
     
     public void finish(Database.BatchableContext BC){
-
-		Messaging.reserveSingleEmailCapacity(2);
-
-		Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-
-		// Strings to hold the email addresses to which you are sending the email.
-		String[] toAddresses = new String[] {'leshii85@gmail.com'}; 
-
-		// Assign the addresses for the To and CC lists to the mail object.
-		mail.setToAddresses(toAddresses);
-		//mail.setCcAddresses(ccAddresses);
-
-		// Specify the address used when the recipients reply to the email. 
-		//mail.setReplyTo('support@acme.com');
-
-		// Specify the name used as the display name.
-		mail.setSenderDisplayName('BaTCHER Leads processing');
-        // Specify the subject line for your email address.
-		mail.setSubject('Leads has been processed : ');
-
-		// Set to True if you want to BCC yourself on the email.
-		mail.setBccSender(false);
-
-		// Optionally append the salesforce.com email signature to the email.
-		// The email address of the user executing the Apex Code will be used.
-		mail.setUseSignature(false);
-
-		// Specify the text content of the email.
-		mail.setPlainTextBody('Lead id: ididididididid - processed Lead id: ididididididdi - error');
-
-		//mail.setHtmlBody('Your case:<b> ' + case.Id +' </b>has been created.<p>'+
-     	//'To view your case <a href=https://yourInstance.salesforce.com/'+case.Id+'>click here.</a>');
-
-		// Send the email you have created.
-		Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-
+		 if (updatedLeads.isEmpty() && errorLeads.isEmpty()) {
+            return;
+        }
+        String[] emailResponde = new String[] { 'leshii85@gmail.com' };
+        sendEmail(emailResponde);
         
     }
 	
@@ -93,11 +68,14 @@ public class LeadToProcessAfterConvertionBatch implements Database.Batchable<sOb
         for(Database.SaveResult result: results){
             if (result.isSuccess()) {
                 Lead leadWithFlag = new Lead();
-            	leadWithFlag.id = leads[i].id;
+               
+                updatedLeads.add(leads[i].id);
             	leadWithFlag.NeedToProcess__c = false;
             	leadsToChangeFlag.add(leadWithFlag);
+                
     		}else {
         	// Operation failed, so get all errors  
+        		errorLeads.add(leads[i].id);
         		ErrorLogger__c logger = new ErrorLogger__c();
             	logger.ErrorType__c = 'SaveResult Errors';
         		for(Database.Error err : result.getErrors()) {
@@ -127,5 +105,15 @@ public class LeadToProcessAfterConvertionBatch implements Database.Batchable<sOb
         List<Object> results = (List<Object>) JSON.deserializeUntyped(response.getBody());
 		//like [{"name":"Belarus"}]
         return (String) ((Map<String,Object>) results[0]).get('name');
+    }
+    
+    private void sendEmail(String[] emails) {
+        Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
+        message.toAddresses = emails;
+        message.subject = 'Lead after proccess from batch';
+        message.plaintextbody = 'Successfull updated Leads (ID) count (' + updatedLeads.size() + '):' + String.join(updatedLeads, ', ') + '\n' + 
+            'Lead with error count (' + errorLeads.size() + '):\n ID: ' + String.join(errorLeads, ', ');
+        Messaging.SingleEmailMessage[] messages = new List<Messaging.SingleEmailMessage> {message};
+        Messaging.sendEmail(messages);
     }
 }
