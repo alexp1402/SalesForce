@@ -7,7 +7,7 @@ public class ContactCustomCreateController {
     
     //construct
     public ContactCustomCreateController(ApexPages.StandardController accStandardController){
-        this.controller = accStandardController;
+ contact = new Contact();        this.controller = accStandardController;
         this.accountId = (Id) accStandardController.getId();
     }
     
