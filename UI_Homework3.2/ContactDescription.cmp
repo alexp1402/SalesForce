@@ -1,0 +1,14 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    
+    <aura:attribute name="description" type="String"/>
+
+    	<lightning:input aura:id="desc" label="Input description"
+                             name="desc"
+                             value="{!v.description}"
+                             />
+
+    <aura:if isTrue="{!not(empty(v.description))}">
+  		Description: {!v.description}
+ 	</aura:if> 
+ 	    	
+</aura:component>
