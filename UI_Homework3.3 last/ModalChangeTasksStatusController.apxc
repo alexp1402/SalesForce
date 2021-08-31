@@ -1,0 +1,15 @@
+public class ModalChangeTasksStatusController {
+	@AuraEnabled
+    public static List<TaskStatus> getStatus(){
+        return [SELECT Id, MasterLabel FROM TaskStatus];
+    }
+    
+    @AuraEnabled
+    public static void setStatus(String status, List<Task> tasks){
+    	for(Task task : tasks){
+	    	task.Status = status;
+    	}
+        
+        update tasks;
+    }
+}

@@ -1,0 +1,27 @@
+<aura:component controller="MyOpenTasksController" implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+    
+    <aura:attribute name="showModal" type="boolean" default="false"/>
+    <aura:attribute name="userId" type="String" />
+    <aura:attribute name="Tasks" type="Task"/>
+    <aura:attribute name="Columns" type="List" />
+    <aura:attribute name="SelectedRows" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.myInit}" />
+    <aura:handler name="closeModal" event="c:CloseModalChangeTaskStatusEvent" action="{!c.closeModalChangeStatus}"/>
+    
+    
+    <lightning:card iconName="standard:task" title="{! 'All tasks for UserId: ' + v.userId}">
+            <lightning:datatable data="{! v.Tasks }" 
+                                 columns="{! v.Columns }"
+                                 keyField="Id"
+                                 aura:id="taskTable"/>
+	</lightning:card>
+    
+	<lightning:button variant="brand" label="Complete" title="Complete" onclick="{! c.openModalChangeStatus}" />
+
+    <aura:if isTrue="{!v.showModal}">
+        <c:ModalChangeTasksStatus tasks="{!v.SelectedRows}"/>
+    
+    </aura:if>
+    
+</aura:component>
