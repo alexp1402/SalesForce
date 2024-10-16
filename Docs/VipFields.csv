@@ -1,0 +1,13 @@
+https://jira.fxclub.org/browse/SFU-5225,,,
+,,,
+VIP manager ,read_only,VIP_manager__c ,
+,,Аккаунт Тригер,если овнер из VIP то VipManager = Owner
+,,MarginCallInService,похоже на отправку емейла VIPам
+,,,
+VIP:Comments for manager,read/write,VIP_Comments_for_manager__c ,не нашел в коде
+,,,
+VIP:Service Close Date,read/write,VIP_Service_Close_Date__c ,
+,,,
+VIP:Service Start Date,read/write,VIP_Service_Start_Date__c,
+,,,
+VIP:Service Type ,read/write,VIP_Service_Type__c ,
