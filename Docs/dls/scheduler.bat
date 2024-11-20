@@ -1,0 +1,1 @@
+"C:\Program Files\DataLoader\v59.0.0\bin\process.bat" c:\Alexp\dls\ accountMasterProcess

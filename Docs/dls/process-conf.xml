@@ -1,0 +1,26 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="accountMasterProcess"
+          class="com.salesforce.dataloader.process.ProcessRunner"
+          scope="prototype">
+        <description>AccountMaster</description>
+        <property name="name" value="accountMasterProcess"/>
+        <property name="configOverrideMap">
+            <map>
+                <entry key="sfdc.debugMessages" value="false"/>
+                <entry key="sfdc.debugMessagesFile" value="c:/Alexp/dls/accountMasterSoapTrace.log"/>
+                <entry key="sfdc.endpoint" value="https://login.salesforce.com"/>
+                <entry key="sfdc.username" value="leshii85@resilient-bear-bhomqg.com"/>
+                <entry key="sfdc.password" value="bf0ff27eaf9fcfb93fe2483ff9bc8b666c6893c87f9d92f55973c9f44d6de5844aff5373752f8ac71ced8e9ada0ba032d6a97f0e57146ba3d5f12b16b83c4254"/>
+                <entry key="process.encryptionKeyFile" value="c:/Alexp/dataLoader.key"/>
+                <entry key="sfdc.timeoutSecs" value="600"/>
+                <entry key="sfdc.loadBatchSize" value="200"/>
+                <entry key="sfdc.entity" value="Account"/>
+                <entry key="process.operation" value="insert"/>
+                <entry key="process.mappingFile" value="c:/Alexp/dls/accountMasterMap.sdl"/>
+                <entry key="dataAccess.name" value="c:/Alexp/dls/Account.csv"/>
+                <entry key="dataAccess.type" value="csvRead"/>
+            </map>
+        </property>
+    </bean>    
+</beans>
